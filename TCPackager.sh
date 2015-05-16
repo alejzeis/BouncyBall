@@ -1,3 +1,3 @@
 echo Packaging
-zip BouncyBall tartget/BouncyBall-1.0-SNAPSHOT.jar start.bat
+zip BouncyBall target/BouncyBall-1.0-SNAPSHOT.jar start.bat
 echo Package complete.
