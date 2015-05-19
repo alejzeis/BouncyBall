@@ -3,6 +3,7 @@ package net.beaconpe.bouncyball;
 import net.beaconpe.bouncyball.network.PacketIntercepter;
 import net.beaconpe.bouncyball.session.RemoteClientSession;
 import net.beaconpe.bouncyball.session.RemoteServerSession;
+import net.beaconpe.bouncyball.util.Worker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
@@ -109,8 +110,10 @@ public class MinecraftPEServer implements Runnable{
         boolean isFound = false;
         for(String addr: clientSessions.keySet()){
             if(addr.equals(dp.getSocketAddress().toString())){
-                clientSessions.get(addr).handlePacket(dp.getData());
                 isFound = true;
+                new Worker(() -> {
+                    clientSessions.get(addr).handlePacket(dp.getData());
+                }, "HandlePacket").start();
                 break;
             }
         }
@@ -127,7 +130,9 @@ public class MinecraftPEServer implements Runnable{
             clientSessions.put(dp.getSocketAddress().toString(), client);
             serverSessions.put(mainServer.toString(), serverSession);
 
-            client.handlePacket(dp.getData());
+            new Worker(() -> {
+                client.handlePacket(dp.getData());
+            }, "HandlePacket").start();
         }
     }
 

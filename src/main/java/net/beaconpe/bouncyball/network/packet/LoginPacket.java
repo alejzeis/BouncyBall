@@ -13,6 +13,7 @@ public class LoginPacket extends DataPacket{
     public int protocol;
     public int protocol2;
     public int clientID;
+    public String skin;
 
     @Override
     protected void _decode(BinaryReader reader) throws IOException {

@@ -5,6 +5,7 @@ import net.beaconpe.bouncyball.network.packet.CustomPacket;
 import net.beaconpe.bouncyball.network.packet.LoginPacket;
 import net.beaconpe.bouncyball.network.packet.MessagePacket;
 import net.beaconpe.bouncyball.session.RemoteClientSession;
+import net.beaconpe.bouncyball.util.LoginData;
 import net.beaconpe.bouncyball.util.ProxyException;
 import net.beaconpe.bouncyball.util.Util;
 
@@ -15,6 +16,7 @@ import org.blockserver.io.BinaryReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 /**
  *
@@ -36,8 +38,16 @@ public class PacketIntercepter {
 
             if(pid <= RAKNET_CUSTOM_PACKET_MAX && pid >= RAKNET_CUSTOM_PACKET_MIN){ //Custom Packet
                 cp = new CustomPacket(bb);
+                session.setCurrentSeqNum(cp.seqNumber);
                 for(CustomPacket.EncapsulatedPacket ep: cp.packets){
-                    handleCustomPacket(ep, session, toServer);
+                    if(ep.messageIndex != -1){
+                        if(!toServer) {
+                            session.setMessageIndex(ep.messageIndex);
+                        }
+                    }
+                    if(ep.buffer != null) {
+                        handleCustomPacket(ep, session, toServer);
+                    }
                 }
             }
         } catch (IOException e) {
@@ -57,7 +67,7 @@ public class PacketIntercepter {
                 lp.decode(ep.buffer);
                 server.getLogger().info(lp.username+"["+session.getAddress().toString()+"] logged into the proxy. (Protocol "+lp.protocol+")");
 
-                session.setUsername(lp.username);
+                session.setLoginData(new LoginData(lp));
                 break;
 
             case MC_MOVE_PLAYER_PACKET:
@@ -68,6 +78,12 @@ public class PacketIntercepter {
                 break;
 
             case MC_DISCONNECT:
+
+                if(reader.getInputStream().available() > 1){
+                    String reason = reader.readString();
+                    System.out.println("There is a reason: "+reason);
+                }
+
                 session.getRemoteServer().setRunning(false);
 
                 server.serverSessions.remove(session.getRemoteServer().getAddress().toString());
@@ -84,8 +100,22 @@ public class PacketIntercepter {
                 if(toServer) { //To prevent private messages from being displayed.
                     MessagePacket mp = new MessagePacket();
                     mp.decode(ep.buffer);
-                    if(server.logChat()) {
+                    if(server.logChat() && !(mp.message.startsWith("/"))) {
                         server.getLogger().info("[Server: " + session.getRemoteServer().getAddress().toString() + "] " + mp.message);
+                    } else if(mp.message.startsWith("/")){
+                        String[] cmd = mp.message.replaceAll("/", "").split(" ");
+                        String cmdName = cmd[0];
+                        server.getLogger().debug("Got a command (len: "+cmd.length+") "+Arrays.toString(cmd));
+                        if(cmdName.equalsIgnoreCase("server")){
+                            if(cmd.length > 0){
+                                //TODO
+                                session.sendMessage("[BouncyBall]: "+Arrays.toString(cmd)+", length: "+cmd.length);
+                            } else {
+                                session.sendMessage("[BouncyBall]: Usage: /server [server]");
+                            }
+                        } else {
+                            //TODO
+                        }
                     }
                 }
                 break;

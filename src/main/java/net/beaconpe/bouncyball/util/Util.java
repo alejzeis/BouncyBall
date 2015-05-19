@@ -37,4 +37,14 @@ public class Util {
                 + (triad[1] << 8)
                 + (triad[2] << 16);
     }
+    public static void writeLTriad(int triad, ByteBuffer bb){
+        bb.put(writeLTriad(triad));
+    }
+    public static byte[] writeLTriad(int triad){
+        return new byte[]{
+                (byte) (triad & 0x0000FF),
+                (byte) ((triad & 0x00FF00) >> 8),
+                (byte) ((triad & 0xFF0000) >> 16)
+        };
+    }
 }

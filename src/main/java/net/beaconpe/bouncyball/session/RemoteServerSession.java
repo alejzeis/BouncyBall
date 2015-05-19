@@ -1,6 +1,7 @@
 package net.beaconpe.bouncyball.session;
 
 import net.beaconpe.bouncyball.MinecraftPEServer;
+import net.beaconpe.bouncyball.util.Worker;
 
 import java.io.IOException;
 import java.net.*;
@@ -34,7 +35,9 @@ public class RemoteServerSession extends Thread implements Session{
         //server.getLogger().info("Got a packet!");
         timeoutTimes = 0;
         if(server.clientSessions.containsKey(clientAddr.toString())){
-            server.clientSessions.get(clientAddr.toString()).forwardToClient(buffer);
+            new Worker(() -> {
+                server.clientSessions.get(clientAddr.toString()).forwardToClient(buffer);
+            }, "HandlePacket").start();
         }
     }
 
