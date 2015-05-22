@@ -1,4 +1,5 @@
-# BouncyBall
+# BouncyBall ![Build Status](http://teamcity.beaconpe.net/app/rest/builds/buildType:BouncyBall_BouncyBuild/statusIcon)
+
 A MCPE proxy, for use with PocketMine or other MCPE servers.
 
 ## How to use BouncyBall
