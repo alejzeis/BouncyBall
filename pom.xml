@@ -39,6 +39,12 @@
             <artifactId>snakeyaml</artifactId>
             <version>1.14</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.bitlet</groupId>
+            <artifactId>weupnp</artifactId>
+            <version>0.1.2</version>
+        </dependency>
     </dependencies>
 
     <build>
