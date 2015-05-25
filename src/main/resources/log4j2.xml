@@ -38,7 +38,7 @@
             <AppenderRef ref="File" />
         </Logger>
         <Root level="all">
-            <AppenderRef ref="BBSysOut" level="DEBUG" />
+            <AppenderRef ref="BBSysOut" level="INFO" />
             <AppenderRef ref="BBFile"/>
         </Root>
     </Loggers>

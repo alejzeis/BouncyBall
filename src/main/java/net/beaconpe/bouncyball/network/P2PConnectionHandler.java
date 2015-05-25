@@ -19,6 +19,7 @@ public class P2PConnectionHandler extends Thread{
     private boolean isLocal;
 
     private Socket connection;
+    private P2PSession session;
 
     private DataInputStream in;
     private DataOutputStream out;
@@ -71,8 +72,15 @@ public class P2PConnectionHandler extends Thread{
         }
     }
 
+    public P2PManager getManager(){
+        return manager;
+    }
+
     private void handlePacket(byte[] packetBuffer) throws IOException {
-        BinaryReader reader = new BinaryReader(new ByteArrayInputStream(packetBuffer));
-        byte pid = reader.readByte();
+        if(session != null){
+            session.handlePacket(packetBuffer);
+        } else {
+            session = P2PSession.openSession(this, packetBuffer);
+        }
     }
 }

@@ -1,0 +1,4 @@
+#Default BouncyBall config file
+hubServer: sg.lbsg.net:19132
+servers:
+  - 127.0.0.1:19132

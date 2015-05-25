@@ -1,6 +1,7 @@
 package net.beaconpe.bouncyball;
 
 import net.beaconpe.bouncyball.network.P2PConnectionHandler;
+import net.beaconpe.bouncyball.utility.BouncyThread;
 import org.bitlet.weupnp.GatewayDevice;
 import org.bitlet.weupnp.GatewayDiscover;
 import org.bitlet.weupnp.PortMappingEntry;
@@ -14,45 +15,26 @@ import java.util.ArrayList;
 /**
  * Thread to handle all P2P communications.
  */
-public class P2PManager extends Thread{
+public class P2PManager extends BouncyThread {
     private ServerSocket socket;
     private MinecraftPEProxy proxy;
 
-    private boolean running = false;
-
     private ArrayList<P2PConnectionHandler> connections = new ArrayList<>();
 
-    private boolean createdPortMapping = false;
+    private boolean createdPortMapping = true;
     private GatewayDevice d;
 
     public P2PManager(MinecraftPEProxy proxy){
         this.proxy = proxy;
-    }
-
-    public final void startup(){
-        if(!running){
-            running = true;
-            start();
-        } else {
-            throw new RuntimeException("Can not start p2p manager: already running.");
-        }
-    }
-
-    public final void shutdown() throws InterruptedException {
-        if(running){
-            running = false;
+        addShutdownTask(() -> {
             try {
                 removePortMappings();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (SAXException e) {
                 e.printStackTrace();
-            } finally {
-                join();
             }
-        } else {
-            throw new RuntimeException("Can not stop p2p manager: not running.");
-        }
+        });
     }
 
     @Override
@@ -64,12 +46,16 @@ public class P2PManager extends Thread{
 
             socket = new ServerSocket();
             socket.bind(new InetSocketAddress(19135));
-            while(running){
-                Socket client = socket.accept();
+            socket.setSoTimeout(2000);
+            while(isRunning()){
+                try {
+                    Socket client = socket.accept();
+                    P2PConnectionHandler connection = new P2PConnectionHandler(this, client, false);
+                    connection.startup();
+                    connections.add(connection);
+                } catch(SocketTimeoutException e){
 
-                P2PConnectionHandler connection = new P2PConnectionHandler(this, client, false);
-                connection.startup();
-                connections.add(connection);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -81,7 +67,7 @@ public class P2PManager extends Thread{
     }
 
     private void removePortMappings() throws IOException, SAXException {
-        if(createdPortMapping){
+        if(createdPortMapping && d != null){
             proxy.getLogger().info("Removing port mappings...");
             d.deletePortMapping(19135, "TCP");
             proxy.getLogger().info("Port mappings removed.");
@@ -115,5 +101,9 @@ public class P2PManager extends Thread{
             proxy.getLogger().error("Could not find any valid gateway devices.");
             proxy.getLogger().error("Try turning UPNP on in your router settings, or port forward port 19135 (TCP) on your router");
         }
+    }
+
+    public MinecraftPEProxy getProxy(){
+        return proxy;
     }
 }
