@@ -1,0 +1,95 @@
+package net.beaconpe.bouncyball.network.protocol;
+
+/**
+ * All the Message Packet ID's
+ */
+enum PacketID{
+	SERVER_REGISTRATION_REQUEST = 0;
+	SERVER_REGISTRATION_ACCEPTED = 1;
+	SERVER_REGISTRATION_DENIED = 2;
+	
+	CLOSE_CONNECTION = 3;
+	SEND_MESSAGE = 4;
+}
+
+/** 
+ * Server -> Proxy
+ * Server Registration Request (0x01).
+ * Sent whenever a server would like to register themselves to the proxy.
+*/
+message ServerRegistrationRequest{
+	required PacketID packetID = 1;
+	/**
+	 * The server's friendly name.
+	 */ 
+	required string serverName = 2;
+	/**
+	 * The proxy ID given by the proxy for registration.
+	 */
+	required uint64 proxyID = 3;	
+}
+/**
+ * Proxy -> Server
+ * ServerRegistrationAccepted (0x01).
+ * Sent by the proxy when the registration was accepted.
+ */
+message ServerRegistrationAccepted{
+	required PacketID packetID = 1;
+}
+
+/**
+ * Proxy -> Server
+ * ServerRegistrationDenied (0x02).
+ * Sent by the proxy when the registration was denied.
+ */
+message ServerRegistrationDenied{
+	required PacketID packetID = 1;
+	/**
+	 * Reason for denial. Default is UNSTATED.
+	 */
+	optional Reason reason = 2 [default = UNSTATED];
+	/**
+	 * Reason for denial as a string. Only should be sent if reason is UNSTATED.
+	 */
+	optional string otherReason = 3 [default = "Not Sent: other reason."];
+	
+	enum Reason{
+		UNSTATED = 0;
+		PROXY_ID_INVALID = 1;
+		SERVER_NAME_INVALID = 2;
+		OTHER = 3;
+	}
+}
+
+/**
+ * Two-Way
+ * CloseConnection (0x03).
+ * Sent by either side before the connection is terminated.
+ */
+message CloseConnection{
+	required PacketID packetID = 1;
+	/**
+	 * The reason for the disconnection.
+	 */
+	optional string reason = 2 [default = "Unstated reason"];
+}
+
+message SendMessage{
+	required PacketID packetID = 1;
+	/**
+	 * The Reciever of this message.
+	 */
+	required string reciever = 2;
+	/**
+	 * If this message was sent in plaintext.
+	 */
+	required bool messageSentInPlain = 3;
+	/**
+	 * The message in plaintext. Can only be sent if messageSentInPlain is true.
+	 */
+	optional string message_plain = 4 [default = "Message is not sent plain."];
+	/**
+	 * The message encoded in JSON with formatting. Can only be sent if messageSentInPlain is false.
+	 */
+	optional string message_json = 5 [default = "Message is not sent in JSON."];
+}
