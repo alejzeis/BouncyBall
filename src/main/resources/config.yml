@@ -1,10 +1,4 @@
-#BouncyBall config file.
-#RemoteServer and RemoteServer port are for the main server all users connect to.
-
-#Remote Server information:
-remoteServer: localhost
-remoteServerPort: 19132
-
-#Logging information.
-logDecodeErrors: true
-logChat: true
+#Default BouncyBall config file
+hubServer: sg.lbsg.net:19132
+servers:
+  - 127.0.0.1:19132
