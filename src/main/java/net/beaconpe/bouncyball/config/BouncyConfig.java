@@ -9,12 +9,14 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Represents the BouncyBall configuration.
  */
 public class BouncyConfig {
 
+    private long proxyID;
     private LinkedServer hubServer;
     private ArrayList<LinkedServer> servers = new ArrayList<>();
 
@@ -27,6 +29,7 @@ public class BouncyConfig {
             createNewConfig();
             config = (Map<String, Object>) yml.load(new FileReader(file));
         } finally {
+            proxyID = Long.parseLong(Integer.toString((int) config.get("proxyID")));
             if(!parseHubServer((String) config.get("hubServer"))){
                 System.err.println("Hub server is invalid.");
             }
@@ -48,7 +51,12 @@ public class BouncyConfig {
 
             String line = "";
             while((line = reader.readLine()) != null){
-                writer.write(line + "\n");
+                if(line.startsWith("#Default")){
+                    writer.write(line + "\n");
+                    writer.write("proxyID: "+new Random().nextInt(1000000)+"\n");
+                } else {
+                    writer.write(line + "\n");
+                }
             }
             reader.close();
             writer.close();
@@ -97,5 +105,9 @@ public class BouncyConfig {
 
     public LinkedServer getHubServer() {
         return hubServer;
+    }
+
+    public long getProxyID() {
+        return proxyID;
     }
 }

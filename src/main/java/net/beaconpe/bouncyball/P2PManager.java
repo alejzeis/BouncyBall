@@ -52,6 +52,7 @@ public class P2PManager extends BouncyThread {
                     Socket client = socket.accept();
                     P2PConnectionHandler connection = new P2PConnectionHandler(this, client, false);
                     connection.startup();
+                    proxy.getLogger().debug("New session opened from: "+client.getRemoteSocketAddress().toString());
                     connections.add(connection);
                 } catch(SocketTimeoutException e){
 

@@ -2,6 +2,7 @@ package net.beaconpe.bouncyball;
 
 import net.beaconpe.bouncyball.config.BouncyConfig;
 import net.beaconpe.bouncyball.network.ClientConnection;
+import net.beaconpe.bouncyball.server.ServerManager;
 import net.beaconpe.bouncyball.utility.BouncyThread;
 import net.beaconpe.bouncyball.utility.ConsoleHandler;
 import net.beaconpe.bouncyball.utility.clock.BouncyClock;
@@ -24,6 +25,7 @@ public class MinecraftPEProxy extends BouncyThread{
     private ArrayList<ClientConnection> connections = new ArrayList<>();
 
     private BouncyConfig config;
+    private ServerManager serverManager;
 
     private DatagramSocket socket;
     private Logger logger;
@@ -43,6 +45,7 @@ public class MinecraftPEProxy extends BouncyThread{
         clock = new BouncyClock(this, 20);
         p2PManager = new P2PManager(this);
         consoleHandler = new ConsoleHandler(this);
+        serverManager = new ServerManager(this);
     }
 
     @Override
@@ -111,5 +114,13 @@ public class MinecraftPEProxy extends BouncyThread{
 
     public BouncyClock getClock() {
         return clock;
+    }
+
+    public long getProxyID(){
+        return config.getProxyID();
+    }
+
+    public ServerManager getServerManager() {
+        return serverManager;
     }
 }
