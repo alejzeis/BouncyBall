@@ -39,6 +39,12 @@
             <artifactId>snakeyaml</artifactId>
             <version>1.14</version>
         </dependency>
+        
+        <dependency>
+                 <groupId>net.beaconpe.jraklib</groupId>
+                 <artifactId>JRakLib</artifactId>
+                 <version>1.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>
