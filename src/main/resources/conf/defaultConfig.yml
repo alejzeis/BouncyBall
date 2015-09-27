@@ -1,0 +1,16 @@
+# BouncyBall configuration file
+
+# The IP address the server will bind to. Do not change this unless you know what you are doing.
+serverIP: 0.0.0.0
+# The port the server will bind to. Default is 19132.
+serverPort: 19132
+# The name of the server that will show up in the server list.
+# If you just want it to broadcast the hub server's name, just put "$hub"
+serverName: A BouncyBall proxy server!
+
+# A list of servers which all clients can connect to using /server [name]
+# The server named "hub" will be the default server new players connect to.
+servers:
+  hub: # An example server which points to LBSG
+    ip: sg.lbsg.net
+    port: 19132
