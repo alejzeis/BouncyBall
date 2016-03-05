@@ -9,12 +9,17 @@ import net.beaconpe.jraklib.server.JRakLibServer;
 import net.beaconpe.jraklib.server.ServerHandler;
 import org.apache.logging.log4j.Logger;
 
+import java.net.InetSocketAddress;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * An implementation of a Minecraft: PE proxy.
  *
  * @author jython234
  */
 public class BouncyBallProxy {
+    @Getter private ExecutorService pool;
     @Getter private final Logger logger;
     @Getter private final YamlConfiguration config;
     @Getter private boolean running = false;
@@ -32,6 +37,7 @@ public class BouncyBallProxy {
         name = config.getString("serverName");
         bindInterface = config.getString("serverIP");
         bindPort = config.getInt("serverPort");
+        pool = Executors.newFixedThreadPool(config.getInt("worker-threads"));
     }
 
     public void start() {
@@ -49,6 +55,7 @@ public class BouncyBallProxy {
         logger.info("Starting BouncyBall " + BouncyBall.VERSION + "...");
         rakLibInterface = new JRakLibInterface(this);
         rakLibInterface.setName(name);
+        logger.info("Using "+config.getInt("worker-threads")+" NIO threads.");
         logger.info("Started server on " + bindInterface + ":" + bindPort);
         while (running) {
             long start = System.currentTimeMillis();
@@ -66,7 +73,12 @@ public class BouncyBallProxy {
         }
     }
 
+    public void sendPacket(byte[] data, InetSocketAddress sendTo) {
+        rakLibInterface.sendPacket(data, JRakLibInterface.socketAddressToIdentifier(sendTo));
+    }
+
     private void doTick() {
         rakLibInterface.process();
+
     }
 }

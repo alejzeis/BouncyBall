@@ -2,12 +2,16 @@ package io.github.jython234.BouncyBall.network;
 
 import io.github.jython234.BouncyBall.BouncyBallProxy;
 import io.github.jython234.BouncyBall.utility.Utils;
+import net.beaconpe.jraklib.JRakLib;
 import net.beaconpe.jraklib.protocol.EncapsulatedPacket;
 import net.beaconpe.jraklib.server.JRakLibServer;
 import net.beaconpe.jraklib.server.ServerHandler;
 import net.beaconpe.jraklib.server.ServerInstance;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 
 /**
  * A class that communicates with JRakLib.
@@ -31,12 +35,22 @@ public class JRakLibInterface implements ServerInstance {
     }
 
     public void process() {
-        while(handler.handlePacket());
+        for(int i = 0; i < 500; i++) { //TODO: Get PPS from config
+            if(!handler.handlePacket()) break;
+        }
 
         if(server.getState() == Thread.State.TERMINATED) {
             proxy.getLogger().fatal("The JRakLibServer has crashed!");
             proxy.stop();
         }
+    }
+
+    public void sendPacket(byte[] data, String identifier) {
+        EncapsulatedPacket pkt = new EncapsulatedPacket();
+        pkt.messageIndex = 0;
+        pkt.reliability = 2;
+        pkt.buffer = data;
+        handler.sendEncapsulated(identifier, pkt, (byte) (0 | JRakLib.PRIORITY_NORMAL));
     }
 
     @Override
@@ -67,6 +81,13 @@ public class JRakLibInterface implements ServerInstance {
     @Override
     public void handleOption(String option, String value) {
 
+    }
+
+    public static String socketAddressToIdentifier(SocketAddress address) {
+        if(address instanceof InetSocketAddress) {
+            return ((InetSocketAddress) address).getAddress() + ":" + ((InetSocketAddress) address).getPort();
+        }
+        return null;
     }
 
     public static class JRakLibLogger implements net.beaconpe.jraklib.Logger {
