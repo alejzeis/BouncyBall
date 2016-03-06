@@ -1,0 +1,22 @@
+﻿{
+    "compilerOptions": {
+        "module": "commonjs",
+        "noImplicitAny": false,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "outDir": "build"
+    },
+  "files": [
+    "app.ts",
+    "BouncyBallProxy.ts",
+    "Logger.ts",
+    "Server.ts",
+
+    //Typings:
+    "Scripts/typings/bytebuffer/bytebuffer.d.ts",
+    "Scripts/typings/long/long.d.ts",
+    "Scripts/typings/chalk/chalk.d.ts",
+    "Scripts/typings/node/node.d.ts"
+  ]
+}

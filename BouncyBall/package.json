@@ -1,0 +1,16 @@
+{
+  "name": "BouncyBall",
+  "version": "1.0.0",
+  "description": "BouncyBall",
+  "main": "BouncyBall.js",
+  "author": {
+    "name": "jython234",
+    "email": ""
+  },
+  "license": "MIT",
+  "dependencies": {
+    "bytebuffer": "5.0.1",
+    "chalk": "1.1.1",
+    "readline": "1.3.0"
+  }
+}
