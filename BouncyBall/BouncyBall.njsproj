@@ -38,6 +38,8 @@
     <Content Include="README.md" />
     <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="BouncyBallProxy.ts" />
+    <TypeScriptCompile Include="Client.ts" />
+    <TypeScriptCompile Include="ClientManager.ts" />
     <TypeScriptCompile Include="Logger.ts" />
     <TypeScriptCompile Include="Scripts\typings\bytebuffer\bytebuffer.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\chalk\chalk.d.ts" />

@@ -1,5 +1,6 @@
 ﻿import Server from "./Server";
 import Logger from "./Logger";
+import ClientManager from "./ClientManager";
 
 import readline = require("readline");
 
@@ -11,6 +12,7 @@ export default class BouncyBallProxy {
 
     private running: boolean = false;
     private server: Server;
+    private clientMgr: ClientManager;
     private logger: Logger;
     private cli: readline.ReadLine;
 
@@ -24,6 +26,8 @@ export default class BouncyBallProxy {
     }
 
     public run() {
+        this.clientMgr = new ClientManager();
+
         this.server = new Server(this);
         this.server.run();
 
@@ -59,7 +63,7 @@ export default class BouncyBallProxy {
                 setTimeout(() => process.exit(0), 2000);
                 break;
             default:
-                this.logger.info(`Unknown command ${line}`);
+                this.logger.info(`Unknown command "${line}"`);
                 this.cli.prompt();
                 break;
         }

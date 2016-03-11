@@ -37,8 +37,8 @@ export default class Server {
         this.proxy.getLogger().info("Frontend server now listening on " + this.socket.address().address + ":" + this.socket.address().port);
     }
 
-    private onMessage(message, info) {
-        this.proxy.getLogger().debug(`Message ${message} from ${info.address}:${info.port}`);
+    private onMessage(message: Buffer, info) {
+        this.proxy.getLogger().debug(`Message ${message.toString('hex')} from ${info.address}:${info.port}`);
         this.send(new Buffer("Echo: " + message, "UTF-8"), info.address, info.port);
     }
 }

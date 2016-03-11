@@ -7,7 +7,7 @@ export default class Logger {
         this.name = name;
     }
 
-    public debug(message: string) {
+    public debug(message: any) {
         console.log(chalk.bold.cyan("[%s] ") + chalk.bold.blue("DEBUG: ") + chalk.bold.white(message), this.name);
     }
 
